@@ -1,8 +1,10 @@
 package tests;
 
+import models.UserBodyLombokModel;
 import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
+import static specs.ReqResSpecs.*;
 
 public class RecRes {
 
@@ -10,43 +12,40 @@ public class RecRes {
     @Test
     void checkFirstNameUser() {
         given()
-                .when()
-                .get("https://reqres.in/api/users/2")
+                .spec(baseRequestSpec)
+                .get("/api/users/2")
                 .then()
-                .log().body()
+                .spec(baseResponseSpec)
                 .body("data.first_name", is("Janet"));
     }
 
     @Test
     void checkUnknownStatusCode() {
         given()
-                .when()
-                .get("https://reqres.in/api/unknown")
+                .spec(baseRequestSpec)
+                .get("/api/unknown")
                 .then()
-                .log().status()
-                .log().body()
+                .spec(baseResponseSpec)
                 .statusCode(200);
     }
 
     @Test
     void checkNotFoundRequest() {
         given()
-                .when()
-                .get("https://reqres.in/api/unknown/23")
+                .spec(baseRequestSpec)
+                .get("/api/unknown/23")
                 .then()
-                .log().status()
-                .log().body()
+                .spec(baseResponseSpec)
                 .statusCode(404);
     }
 
     @Test
     void checkTotalUsers() {
         given()
-                .when()
-                .get("https://reqres.in/api/users?page=2")
+                .spec(baseRequestSpec)
+                .get("/api/users?page=2")
                 .then()
-                .log().status()
-                .log().body()
+                .spec(baseResponseSpec)
                 .body("total", is(12));
     }
 
@@ -54,11 +53,26 @@ public class RecRes {
     void checkSupportText() {
         String textSupport = "To keep ReqRes free, contributions towards server costs are appreciated!";
         given()
-                .when()
-                .get("https://reqres.in/api/unknown/2")
+                .spec(baseRequestSpec)
+                .get("/api/unknown/2")
                 .then()
-                .log().status()
-                .log().body()
+                .spec(baseResponseSpec)
                 .body("support.text", is(textSupport));
     }
+
+    @Test
+    void checkCreateUser() {
+        UserBodyLombokModel user = new UserBodyLombokModel();
+        user.setName("mark");
+        user.setName("QA");
+        given()
+                .spec(createUserRequestSpec)
+                .body(user)
+                .post()
+                .then()
+                .spec(createUserResponseSpec)
+                .extract()
+                .as(UserBodyLombokModel.class);
+    }
+
 }
