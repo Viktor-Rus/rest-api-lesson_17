@@ -3,6 +3,7 @@ package tests;
 import models.UserBodyLombokModel;
 import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.is;
 import static specs.ReqResSpecs.*;
 
@@ -64,7 +65,7 @@ public class RecRes {
     void checkCreateUser() {
         UserBodyLombokModel user = new UserBodyLombokModel();
         user.setName("mark");
-        user.setName("QA");
+        user.setJob("QA");
         given()
                 .spec(createUserRequestSpec)
                 .body(user)
@@ -73,6 +74,24 @@ public class RecRes {
                 .spec(createUserResponseSpec)
                 .extract()
                 .as(UserBodyLombokModel.class);
+    }
+
+    @Test
+    void checkGetInformUser() {
+
+        given()
+                .spec(getUsers)
+                .log().all()
+                .when()
+                .get()
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("data.findAll{it.first_name}.first_name.flatten()",
+                        hasItem("Tracey"));
+
+
+
     }
 
 }

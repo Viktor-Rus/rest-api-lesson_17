@@ -39,4 +39,13 @@ public class ReqResSpecs {
             .log(LogDetail.STATUS)
             .log(LogDetail.BODY)
             .build();
+
+
+    public static RequestSpecification getUsers = with()
+            .filter(withCustomTemplates())
+            .baseUri("https://reqres.in")
+            .basePath("/api/users?page")
+            .log().uri()
+            .log().body()
+            .contentType(ContentType.JSON);
 }
